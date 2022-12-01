@@ -9,7 +9,10 @@ with open("./input.txt", encoding="utf-8") as infile:
             cur_sum = 0
         else:
             cur_sum += int(line)
-    sums.append(cur_sum)  # last elf
+
+    if cur_sum > 0:
+        # no empty line at end of file
+        sums.append(cur_sum)  # last elf
 
 
 sums = sorted(sums, reverse=True)

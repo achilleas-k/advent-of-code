@@ -1,5 +1,4 @@
 cur_sum = 0
-max_sum = 0
 sums = []
 
 with open("./input.txt", encoding="utf-8") as infile:
@@ -7,12 +6,14 @@ with open("./input.txt", encoding="utf-8") as infile:
         line = line.strip()
         if line == "":
             sums.append(cur_sum)
-            max_sum = max(cur_sum, max_sum)
             cur_sum = 0
         else:
             cur_sum += int(line)
+    sums.append(cur_sum)  # last elf
 
-print(max_sum)
 
-top3 = sorted(sums, reverse=True)[:3]
-print(top3, sum(top3))
+sums = sorted(sums, reverse=True)
+
+print(f"Max: {sums[0]}")
+top3 = sums[:3]
+print(f"top3: {top3}: {sum(top3)}")

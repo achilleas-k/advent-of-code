@@ -16,30 +16,45 @@ loss = 0
 
 
 # static rule map
-rules_p1 = {
+rules = {
     "A": {
-        "X": draw,
-        "Y": win,
-        "Z": loss,
+        "A": draw,
+        "B": win,
+        "C": loss,
     },
     "B": {
-        "X": loss,
-        "Y": draw,
-        "Z": win,
+        "A": loss,
+        "B": draw,
+        "C": win,
     },
     "C": {
-        "X": win,
-        "Y": loss,
-        "Z": draw,
+        "A": win,
+        "B": loss,
+        "C": draw,
     }
 }
 
-points = {"X": 1, "Y": 2, "Z": 3}
+
+points = {"A": 1, "B": 2, "C": 3}
 
 
-def calc_round_score(opponent: str, me: str) -> int:
+def play_p1(me: str) -> str:
+    """
+    Decide what to play: part 1
+    """
+    if me == "X":
+        return "A"
+    if me == "Y":
+        return "B"
+    if me == "Z":
+        return "C"
+    raise ValueError(f"Unknown value {me}")
+
+
+def calc_round_score_p1(opponent: str, me: str) -> int:
     # base shape score + outcome score
-    return points[me] + rules_p1[opponent][me]
+    me = play_p1(me)
+    return points[me] + rules[opponent][me]
 
 
 total_score = 0
@@ -48,7 +63,7 @@ print(f"Using data from {fname}")
 with open(fname, encoding="utf-8") as infile:
     for idx, line in enumerate(infile):
         opponent, me = line.strip().split(" ", 2)
-        round_score = calc_round_score(opponent, me)
+        round_score = calc_round_score_p1(opponent, me)
         print(f"Round {idx+1}: {round_score}")
         total_score += round_score
 

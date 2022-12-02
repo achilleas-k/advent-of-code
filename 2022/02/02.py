@@ -1,40 +1,22 @@
 import sys
 
 
-symbols = {
-    "opponent": {
-        "A": "Rock", "B": "Paper", "C": "Scissors",
-    },
-    "me": {
-        "X": "Rock", "Y": "Paper", "Z": "Scissors",
-    }
-}
-
-win = 6
-draw = 3
-loss = 0
-
-
-# static rule map
-rules = {
-    "A": {
-        "A": draw,
-        "B": win,
-        "C": loss,
-    },
-    "B": {
-        "A": loss,
-        "B": draw,
-        "C": win,
-    },
-    "C": {
-        "A": win,
-        "B": loss,
-        "C": draw,
-    }
-}
-
 points = {"A": 1, "B": 2, "C": 3}
+
+
+def calc_score(opponent: str, me: str) -> int:
+    me_pts = points[me]
+    wld = (ord(opponent) - ord(me)) % 3
+    if wld == 0:  # draw
+        return 3 + me_pts
+
+    if wld == 1:  # loss
+        return 0 + me_pts
+
+    if wld == 2:  # win
+        return 6 + me_pts
+
+    raise ValueError(f"WAT: {str(wld)}")
 
 
 def play_p1(me: str) -> str:
@@ -54,6 +36,9 @@ def play_p1(me: str) -> str:
 
 
 def play_p2(opponent: str, outcome: str) -> str:
+    """
+    Decide what to play: part 2
+    """
     if outcome == "Y":
         # draw: play the same
         return opponent
@@ -74,13 +59,13 @@ def play_p2(opponent: str, outcome: str) -> str:
 def calc_round_score_p1(opponent: str, me: str) -> int:
     # base shape score + outcome score
     me = play_p1(me)
-    return points[me] + rules[opponent][me]
+    return calc_score(opponent, me)
 
 
 def calc_round_score_p2(opponent: str, me: str) -> int:
     # base shape score + outcome score
     me = play_p2(opponent, me)
-    return points[me] + rules[opponent][me]
+    return calc_score(opponent, me)
 
 
 total_score = 0
@@ -101,7 +86,7 @@ with open(fname, encoding="utf-8") as infile:
     for idx, line in enumerate(infile):
         opponent, me = line.strip().split(" ", 2)
         round_score = calc_round_score_p2(opponent, me)
-        print(f"Round {idx+1}: {round_score}")
+        # print(f"Round {idx+1}: {round_score}")
         total_score += round_score
 
 

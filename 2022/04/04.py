@@ -34,11 +34,28 @@ def superset(a: Tuple[int, int], b: Tuple[int, int]) -> bool:
     return False
 
 
+def overlap(a: Tuple[int, int], b: Tuple[int, int]) -> bool:
+    if superset(a, b):
+        # get that out of the way
+        return True
+
+    if a[0] <= b[0] and a[1] >= b[0]:
+        return True
+
+    if a[0] >= b[0] and a[0] <= b[1]:
+        return True
+
+    return False
+
+
+supersets = 0
 overlaps = 0
 with open(fname, encoding="utf-8") as infile:
     for line in infile:
         line = line.strip()
         range_a, range_b = split_line(line)
-        overlaps += superset(parse_range(range_a), parse_range(range_b))
+        supersets += superset(parse_range(range_a), parse_range(range_b))
+        overlaps += overlap(parse_range(range_a), parse_range(range_b))
 
-print(overlaps)
+print(f"Supersets: {supersets}")
+print(f"Overlaps:  {overlaps}")

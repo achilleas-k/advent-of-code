@@ -25,7 +25,7 @@ def parse_crate_row(line: str) -> Optional[List[str]]:
     num_stacks = len(line)//4
     crates = []
     for col in range(num_stacks):
-        crate = line[col*4+1:(col+1)*4-2]
+        crate = line[col*4+1]
         crates.append(crate)
 
     return crates

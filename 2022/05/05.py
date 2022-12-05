@@ -5,6 +5,7 @@ from typing import Dict, List, Optional
 
 
 fname = sys.argv[1]
+part = sys.argv[2]
 
 Stacks = Dict[int, List[str]]
 Move = Dict[str, int]
@@ -53,15 +54,39 @@ def parse_move_row(line: str) -> Optional[Move]:
     return None
 
 
-def perform_move(stacks: Stacks, move: Move) -> Stacks:
+def perform_move_9000(stacks: Stacks, move: Move) -> Stacks:
     """
-    Performs the given move on the given stack and returns the new stack state.
+    Performs the given move as the CrateMover 9000 on the given stack and returns the new stack state.
     """
     from_stack = move["from"]
     to_stack = move["to"]
     for move_num in range(move["move"]):
         crate = stacks[from_stack].pop(0)  # remove from top
         stacks[to_stack].insert(0, crate)  # add to top
+    return stacks
+
+
+def perform_move_9001(stacks: Stacks, move: Move) -> Stacks:
+    """
+    Performs the given move as the CrateMover 9001 on the given stack and returns the new stack state.
+    """
+    from_stack = move["from"]
+    to_stack = move["to"]
+    move_crates = move["move"]
+
+    stack = stacks[from_stack]
+
+    # split the stack into mover and remaining
+    mover = stack[:move_crates]
+    stack = stack[move_crates:]
+
+    # put back the remaining stack
+    stacks[from_stack] = stack
+
+    # prepend the mover crates onto the destination stack
+    mover.extend(stacks[to_stack])
+    stacks[to_stack] = mover
+
     return stacks
 
 
@@ -97,8 +122,14 @@ with open(fname, encoding="utf-8") as infile:
 print([stacks[k] for k in sorted(stacks.keys())])
 print(moves)
 
-for move in moves:
-    stacks = perform_move(stacks, move)
+if part == "a":
+    for move in moves:
+        stacks = perform_move_9000(stacks, move)
+elif part == "b":
+    for move in moves:
+        stacks = perform_move_9001(stacks, move)
+else:
+    ValueError(f"unknown part: {part} ('a' or 'b')")
 
 print([stacks[k] for k in sorted(stacks.keys())])
 

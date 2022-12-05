@@ -65,6 +65,15 @@ def perform_move(stacks: Stacks, move: Move) -> Stacks:
     return stacks
 
 
+def print_tops(stacks: Stacks):
+    tops = []
+    for stack_num in sorted(stacks.keys()):
+        stack = stacks[stack_num]
+        tops.append(stack[0])
+
+    print("".join(tops))
+
+
 stacks: Dict[int, List[str]] = {}
 moves = []
 with open(fname, encoding="utf-8") as infile:
@@ -92,3 +101,5 @@ for move in moves:
     stacks = perform_move(stacks, move)
 
 print([stacks[k] for k in sorted(stacks.keys())])
+
+print_tops(stacks)

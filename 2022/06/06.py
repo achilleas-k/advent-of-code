@@ -6,12 +6,12 @@ fname = sys.argv[1]
 
 def first_marker_index(line: str, mlen: int) -> int:
     for idx in range(len(line)):
-        # 4 char sliding window
+        # mlen char sliding window
         win = line[idx:idx+mlen]
         if len(set(win)) == len(win):
             return idx+mlen
 
-    return -1
+    raise RuntimeError("no marker found")
 
 
 with open(fname, encoding="utf-8") as infile:

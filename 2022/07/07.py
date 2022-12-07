@@ -76,15 +76,14 @@ def parse_output(line: str, state: State):
     state["/"] = root
 
 
-def find_nodes(node, cond):
+def collect_nodes(node):
     nodes = []
 
     for name in node.keys():
         subnode = node.get(name)
         if tree := subnode.get("tree"):  # only consider directories
-            if cond(subnode):
-                nodes.append((name, subnode["size"]))
-            nodes.extend(find_nodes(tree, cond))
+            nodes.append((name, subnode["size"]))
+            nodes.extend(collect_nodes(tree))
 
     return nodes
 
@@ -104,11 +103,34 @@ with open(fname, encoding="utf-8") as infile:
 print(json.dumps(state, indent=2))
 
 
-small_dirs = []
+dirs = []
 root = state["/"]
-if cond(root):
-    small_dirs.append(("/", root["size"]))
+dirs = [("/", root["size"])]
+dirs.extend(collect_nodes(state["/"]["tree"]))
 
-small_dirs = find_nodes(state["/"]["tree"], cond=lambda x: x["size"] < 100_000)
-print(small_dirs)
-print(sum(sd[1] for sd in small_dirs))
+dirs = sorted(dirs, key=lambda x: x[1])
+print("Directory sizes")
+print("\n".join(f"{d[1]:10d} {d[0]}" for d in dirs))
+
+max_size = 100000
+print(f"Part 1: Sum of directories < {max_size}")
+small_dirs_total = 0
+for _, size in dirs:
+    if size < max_size:
+        small_dirs_total += size
+print(small_dirs_total)
+
+storage = 70000000
+required = 30000000
+
+used = state["/"]["size"]
+free = storage - used
+
+space_required = required - free
+
+# smallest directory that is > space_required
+print(f"Part 2: Smallest directory > {space_required}")
+for d in dirs:
+    if d[1] > space_required:
+        print(f"{d[1]:10d} {d[0]}")
+        break

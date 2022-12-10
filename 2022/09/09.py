@@ -69,6 +69,10 @@ def parse_line(line: str) -> Tuple[str, int]:
 
 
 rope_length = 2
+if len(sys.argv) == 3:
+    rope_length = int(sys.argv[2])
+
+
 knots: List[Coords] = [(0, 0) for _ in range(rope_length)]
 visited: Set[Coords] = set()
 with open(fname, encoding="utf-8") as infile:

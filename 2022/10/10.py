@@ -31,11 +31,11 @@ stop = 220
 with open(fname, encoding="utf-8") as infile:
     for line in infile:
         cycles, value = read_instruction(line.strip())
-        cycle += cycles
-        if (cycle + 20) // 40 > len(signal_strengths):
-            # we crossed an interesting cycle: save the current strength at that cycle before changing it
-            c = len(signal_strengths) * 40 + 20
-            signal_strengths.append(c * reg)
+        for cc in range(cycles):
+            cycle += 1
+            if (cycle + 20) // 40 > len(signal_strengths):
+                # we crossed an interesting cycle: save the current strength at that cycle before updating the register
+                signal_strengths.append(cycle * reg)
 
         if cycle >= stop:
             break

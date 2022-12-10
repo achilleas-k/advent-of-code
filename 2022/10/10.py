@@ -26,8 +26,7 @@ cycle = 0
 reg = 1
 signal_strengths: List[int] = []
 
-stop = 220
-
+screen = []
 with open(fname, encoding="utf-8") as infile:
     for line in infile:
         cycles, value = read_instruction(line.strip())
@@ -37,8 +36,13 @@ with open(fname, encoding="utf-8") as infile:
                 # we crossed an interesting cycle: save the current strength at that cycle before updating the register
                 signal_strengths.append(cycle * reg)
 
-        if cycle >= stop:
-            break
+            pixel = (cycle - 1) % 40
+            if reg-1 <= pixel <= reg+1:
+                # pixel on
+                screen.append("#")
+            else:
+                # pixel off
+                screen.append(" ")
 
         # update register at the end of the instruction's cycles
         reg += value
@@ -46,3 +50,9 @@ with open(fname, encoding="utf-8") as infile:
 print("Signal strenghts")
 print(", ".join(str(ss) for ss in signal_strengths))
 print(f"Sum: {sum(signal_strengths)}")
+
+print("Image")
+for p, v in enumerate(screen, start=1):
+    print(v, end="")
+    if p % 40 == 0:
+        print()

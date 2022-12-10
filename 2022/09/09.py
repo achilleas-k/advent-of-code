@@ -1,5 +1,5 @@
 import sys
-from typing import Tuple, Set
+from typing import List, Set, Tuple
 
 
 fname = sys.argv[1]
@@ -68,16 +68,19 @@ def parse_line(line: str) -> Tuple[str, int]:
     return parts[0], int(parts[1])
 
 
-head_pos = (0, 0)
-tail_pos = (0, 0)
+rope_length = 2
+knots: List[Coords] = [(0, 0) for _ in range(rope_length)]
 visited: Set[Coords] = set()
 with open(fname, encoding="utf-8") as infile:
     for line in infile:
         direction, steps = parse_line(line.strip())
         for _ in range(steps):
-            head_pos = move_head(direction, head_pos)
-            tail_pos = move_tail(tail_pos, head_pos)
-            visited.add(tail_pos)
+            knots[0] = move_head(direction, knots[0])  # move head in direction
+            for idx, knot in enumerate(knots[1:], start=1):
+                knots[idx] = move_tail(knot, knots[idx-1])  # move the rest of the rope based on previous index
+
+            # track last knot
+            visited.add(knots[-1])
 
 
 print(f"Part 1: The tail visited {len(visited)} positions")

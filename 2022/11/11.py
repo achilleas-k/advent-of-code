@@ -1,7 +1,7 @@
 import re
 import sys
 
-from typing import Any, List, Tuple, Dict
+from typing import Any, Dict
 
 
 fname = sys.argv[1]

@@ -1,3 +1,4 @@
+import math
 import re
 import sys
 
@@ -66,13 +67,21 @@ def update_worry(operation: str, value: int) -> int:
     raise ValueError(f"unknown operation {moper} in {operation}")
 
 
-def run_action(monkeys: Dict[int, Monkey], mnum: int, div=True):
+def run_action(monkeys: Dict[int, Monkey], mnum: int, condprod: int, div=True):
     monkey = monkeys[mnum]
     for item in monkey["items"]:
         # update the worry value
         new_val = update_worry(monkey["operation"], item)
         if div:
             new_val //= 3
+        else:
+            # If we're not dividing by three, we should reduce the values using the product of all test conditions:
+            # keep the remainder from the modulo of all test conditions to avoid huge numbers
+            new_val = new_val % condprod
+            if new_val == 0:
+                # avoid 0 values: these would cause worry updates with multiplications to fail
+                new_val = condprod
+
         # get recipient monkey number based on test condition
         rec_num = monkey["test"][new_val % monkey["test"]["condition"] == 0]
         monkeys[rec_num]["items"].append(new_val)
@@ -100,17 +109,26 @@ with open(fname, encoding="utf-8") as infile:
             set_false_action(line, monkeys[monkey_num])
 
 
+part = int(sys.argv[2])
+
 nrounds = 20
-if len(sys.argv) == 3:
-    nrounds = int(sys.argv[2])
+if len(sys.argv) == 4:
+    nrounds = int(sys.argv[3])
+
+# product of all test conditions: required for part 2
+test_product = math.prod(m["test"]["condition"] for m in monkeys.values())
+
 
 action_counts: Dict[int, int] = {}
 for rnd in range(nrounds):
+    print(f"\rRound {rnd+1}/{nrounds}", end="", flush=True)
     for num in sorted(monkeys.keys()):  # keys should be ordered from creation, but sort them anyway
         # add the number of current items to the action count for the given monkey
         action_count = action_counts.get(num, 0)
         action_counts[num] = len(monkeys[num]["items"]) + action_count
-        run_action(monkeys, num)
+        run_action(monkeys, num, test_product, div=part == 1)
+
+print("\nDone!")
 
 print_monkey_items(monkeys)
 print()

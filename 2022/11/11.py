@@ -92,8 +92,17 @@ nrounds = 20
 if len(sys.argv) == 3:
     nrounds = int(sys.argv[2])
 
+action_counts: Dict[int, int] = {}
 for rnd in range(nrounds):
     for num in sorted(monkeys.keys()):  # keys should be ordered from creation, but sort them anyway
+        # add the number of current items to the action count for the given monkey
+        action_count = action_counts.get(num, 0)
+        action_counts[num] = len(monkeys[num]["items"]) + action_count
         run_action(monkeys, num)
 
 print_monkey_items(monkeys)
+print()
+
+print("Action counts")
+for num, count in action_counts.items():
+    print(f"Monkey {num} performed {count} actions")

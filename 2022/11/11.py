@@ -46,6 +46,29 @@ def set_false_action(line: str, monkey: Monkey):
     monkey["test"][False] = int(line.strip()[len(prefix):])
 
 
+def print_monkey_items(monkeys: Dict[int, Monkey]):
+    for number, monkey in monkeys.items():
+        print(f"Monkey {number}: {', '.join(str(item) for item in monkey['items'])}")
+
+
+def update_worry(operation: str, value: int) -> int:
+    operation = operation.replace("old", str(value))
+    return eval(operation)  # naughty
+
+
+def run_action(monkeys: Dict[int, Monkey], mnum: int):
+    monkey = monkeys[mnum]
+    for item in monkey["items"]:
+        # update the worry value
+        new_val = update_worry(monkey["operation"], item) // 3
+        # get recipient monkey number based on test condition
+        rec_num = monkey["test"][new_val % monkey["test"]["condition"] == 0]
+        monkeys[rec_num]["items"].append(new_val)
+
+    # monkey's done throwing: reset items
+    monkeys[mnum]["items"] = []
+
+
 monkeys: Dict[int, Monkey] = {}
 monkey_num = -1
 with open(fname, encoding="utf-8") as infile:
@@ -63,3 +86,14 @@ with open(fname, encoding="utf-8") as infile:
             set_true_action(line, monkeys[monkey_num])
         elif line.strip().startswith("If false"):
             set_false_action(line, monkeys[monkey_num])
+
+
+nrounds = 20
+if len(sys.argv) == 3:
+    nrounds = int(sys.argv[2])
+
+for rnd in range(nrounds):
+    for num in sorted(monkeys.keys()):  # keys should be ordered from creation, but sort them anyway
+        run_action(monkeys, num)
+
+print_monkey_items(monkeys)

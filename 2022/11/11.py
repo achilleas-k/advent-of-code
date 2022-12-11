@@ -106,3 +106,7 @@ print()
 print("Action counts")
 for num, count in action_counts.items():
     print(f"Monkey {num} performed {count} actions")
+
+top_actions = sorted(action_counts.values(), reverse=True)
+monkey_business = top_actions[0] * top_actions[1]
+print(f"Monkey business level: {monkey_business}")

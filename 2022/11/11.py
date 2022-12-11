@@ -52,15 +52,27 @@ def print_monkey_items(monkeys: Dict[int, Monkey]):
 
 
 def update_worry(operation: str, value: int) -> int:
-    operation = operation.replace("old", str(value))
-    return eval(operation)  # naughty
+    parts = operation.split(" ")
+    moper = parts[1]  # mathematical operation symbol
+    val1 = value if parts[0] == "old" else int(parts[0])
+    val2 = value if parts[2] == "old" else int(parts[2])
+
+    if moper == "+":
+        return val1 + val2
+
+    if moper == "*":
+        return val1 * val2
+
+    raise ValueError(f"unknown operation {moper} in {operation}")
 
 
-def run_action(monkeys: Dict[int, Monkey], mnum: int):
+def run_action(monkeys: Dict[int, Monkey], mnum: int, div=True):
     monkey = monkeys[mnum]
     for item in monkey["items"]:
         # update the worry value
-        new_val = update_worry(monkey["operation"], item) // 3
+        new_val = update_worry(monkey["operation"], item)
+        if div:
+            new_val //= 3
         # get recipient monkey number based on test condition
         rec_num = monkey["test"][new_val % monkey["test"]["condition"] == 0]
         monkeys[rec_num]["items"].append(new_val)
